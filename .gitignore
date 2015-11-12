@@ -1,3 +1,4 @@
 src/*.o
 sweetparse
-
+*.swp
+*.swo

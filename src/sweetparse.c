@@ -4,7 +4,7 @@
 #include "datatypes.h"
 
 unsigned int indentation = 0;
-unsigned int indent_size = 1;
+unsigned int indent_size = 2;
 void printList(swexp_list_node * node) {
     while(node != NULL) {
         switch(node->type){

@@ -28,9 +28,12 @@ typedef struct parse{
     unsigned int buffer_index;
     unsigned int indentation;
     unsigned int symbol_ct_this_line;
+    unsigned int linect;
 } parse;
 
 swexp_list_node * parse_file_to_atoms(FILE * fd);
+swexp_list_node * parse_line(parse * p);
+swexp_list_node * parse_s_expression(parse * p);
 void traverse_list(swexp_list_node * node, 
         void (*callback)(swexp_list_node *));
 
