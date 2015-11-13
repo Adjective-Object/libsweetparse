@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <getopt.h>
 
+#include "parser.h"
 #include "datatypes.h"
+#include "sweetexpressions.h"
 
 unsigned int indentation = 0;
 unsigned int INDENT_SIZE = 2;
@@ -67,7 +69,7 @@ int main(int argc, char ** argv) {
             exit(1);
         }
 
-        swexp_list_node * head = parse_file_to_atoms(f);
+        swexp_list_node * head = parse_file_to_atoms(f, 255);
         printList(head);
         printf("\n");
     }

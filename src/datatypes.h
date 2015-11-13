@@ -1,5 +1,5 @@
-#ifndef SWEETPARSE
-#define SWEETPARSE
+#ifndef SWEETEXPR_DATATYPES
+#define SWEETEXPR_DATATYPES
 
 typedef enum {
     UNDEFINED,
@@ -13,28 +13,17 @@ typedef struct swexp_list_node {
     struct swexp_list_node * next;
 } swexp_list_node;
 
-typedef enum {
-    COUNTING_INDENTATION,
-    COLLECTING_ATOM,
-    COLLECTING_QUOTED_ATOM,
-    COLLECTING_LIST,
-    SKIP_SPACE
-} parser_state;
+// get the length of a list
+unsigned int chain_len(swexp_list_node * list);
+unsigned int list_len(swexp_list_node * list);
 
-typedef struct parse{
-    FILE *f;
-    parser_state state;
-    char * buffer;
-    unsigned int buffer_index;
-    unsigned int indentation;
-    unsigned int symbol_ct_this_line;
-    unsigned int linect;
-} parse;
+// step to the tail of a chain / list
+swexp_list_node * chain_tail(swexp_list_node * list);
+swexp_list_node * list_tail(swexp_list_node * list);
 
-swexp_list_node * parse_file_to_atoms(FILE * fd);
-swexp_list_node * parse_line(parse * p);
-swexp_list_node * parse_s_expression(parse * p);
-void traverse_list(swexp_list_node * node, 
-        void (*callback)(swexp_list_node *));
+// build a list around a node
+swexp_list_node * listof(swexp_list_node * list_content);
+swexp_list_node * atomof(char *c);
 
 #endif
+

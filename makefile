@@ -5,17 +5,18 @@
 all: lib example
 
 lib = libsweetexpressions.so
-src = src/datatypes.c
+src = src/datatypes.c src/parser.c src/charclasses.c \
+	  src/sweetexpressions.c
 libobjs = $(src:.c=.o)
 
-LIBS =
 CFLAGS = -g -Wall -std=c99 -fPIC
+LDFLAGS = -shared
 
 lib: $(lib)
 
-# build the libs from the shared object files
+# link the libs from the object files
 $(lib): $(libobjs)
-	gcc -shared -o $@ -fPIC $^
+	gcc $(LDFLAGS) -o $@ $^
 
 src/%.o : src/%.c src/%.h
 	gcc $(CFLAGS) -c $< -o $@
@@ -24,7 +25,7 @@ src/%.o : src/%.c src/%.h
 # BUILDING THE PARSER EXAMPLE #
 ###############################
 
-example_exec = sweetparse
+example_exec = example/sweetparse
 example_src = example/sweetparse.c
 example_obj = $(example_src:.c=.o)
 example_cflags = -g -Wall -std=c99 -Isrc
@@ -49,3 +50,26 @@ clean:
 # debug helper to print makefile variables
 print-%:
 	@echo '$*=$($*)'
+
+###########
+# INSTALL #
+###########
+
+installdir = /usr/lib
+
+.PHONY: install
+install: $(lib)
+	cp $(lib) $(installdir)
+
+###########
+# TESTING #
+###########
+
+.PHONY:  tests/*.input
+.SILENT: tests/*.input
+test: tests/*.input
+
+tests/*.swexp.input:
+	$(example_exec) $@ | diff - $(@:.swexp.input=.swexp.output) 
+	if [ $$? = 0 ]; then echo "test '$@' passed"; else echo "test failed"; fi
+
