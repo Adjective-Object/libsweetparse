@@ -1,9 +1,9 @@
 #ifndef SWEETEXPR
 #define SWEETEXPR
 
-#include "sweetexpressions/datatypes.h"
-#include "sweetexpressions/charclasses.h"
-#include "sweetexpressions/parser.h"
+#include "datatypes.h"
+#include "charclasses.h"
+#include "parser.h"
 
 
 void traverse_list(swexp_list_node * node,

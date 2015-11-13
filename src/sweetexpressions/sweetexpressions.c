@@ -1,4 +1,5 @@
-#include "sweetexpressions.h"
+#include "charclasses.h"
+#include "datatypes.h"
 
 void traverse_list(swexp_list_node * node,
         void (*callback)(swexp_list_node *)) {

@@ -5,8 +5,8 @@
 all: lib example
 
 lib = libsweetexpressions.so
-src = src/datatypes.c src/parser.c src/charclasses.c \
-	  src/sweetexpressions.c
+src = src/sweetexpressions/datatypes.c src/sweetexpressions/parser.c \
+	  src/sweetexpressions/charclasses.c src/sweetexpressions.c
 libobjs = $(src:.c=.o)
 
 CFLAGS = -g -Wall -std=c99 -fPIC
@@ -56,10 +56,19 @@ print-%:
 ###########
 
 installdir = /usr/lib
+headerdir = /usr/include
+subheaderdir = $(headerdir)/sweetexpressions
+
+coreheader = src/sweetexpressions.h
+subheaders = src/sweetexpressions/*.h
 
 .PHONY: install
 install: $(lib)
 	cp $(lib) $(installdir)
+	mkdir -p $(headerdir)
+	cp $(coreheader) $(headerdir)
+	mkdir -p $(subheaderdir)
+	cp -r $(subheaders) $(subheaderdir)
 
 ###########
 # TESTING #
