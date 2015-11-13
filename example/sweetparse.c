@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-#include "parser.h"
-#include "datatypes.h"
 #include "sweetexpressions.h"
 
 unsigned int indentation = 0;
