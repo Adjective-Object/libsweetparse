@@ -30,6 +30,8 @@ swexp_list_node * parse_s_expr(parser * p, char opening_brace);
 swexp_list_node * parse_line(parser * p);
 swexp_list_node * parse_block(parser * p);
 
+void free_nodes(swexp_list_node * head);
+
 // parses a file to atoms
 swexp_list_node * parse_file_to_atoms(
         FILE* f, unsigned int buffsize);

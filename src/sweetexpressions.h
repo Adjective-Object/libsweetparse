@@ -9,5 +9,7 @@
 void traverse_list(swexp_list_node * node,
         void (*callback)(swexp_list_node *));
 
+void free_list(swexp_list_node * head);
+
 #endif
 
