@@ -19,6 +19,7 @@ unsigned int list_len(swexp_list_node * list);
 
 // step to the tail of a chain / list
 swexp_list_node * chain_tail(swexp_list_node * list);
+swexp_list_node * list_head(swexp_list_node * list);
 swexp_list_node * list_tail(swexp_list_node * list);
 
 // build a list around a node

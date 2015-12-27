@@ -24,6 +24,14 @@ unsigned int chain_len(swexp_list_node * node) {
     return count;
 }
 
+swexp_list_node * list_head(swexp_list_node * list) {
+    if (list->type != LIST) {
+        printf("tried to get tail of non list");
+        exit(1);
+    }
+    
+    return (swexp_list_node *) list->content;
+}
 
 swexp_list_node * chain_tail(swexp_list_node * list) {
     for(; list->next != NULL; list = list->next){}
