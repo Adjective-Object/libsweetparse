@@ -4,3 +4,4 @@ sweetparse
 *.swo
 .*
 *.so
+*.o
