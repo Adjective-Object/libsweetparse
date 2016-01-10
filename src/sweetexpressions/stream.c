@@ -6,7 +6,7 @@
 stream * sopen_file(const char * path) {
     stream * s = malloc(sizeof(stream));
     s->file = fopen(path, "r");
-    s->type = FROM_FILE;
+    s->type = __SWEXP_FROM_FILE;
 
     s->origin = NULL;
     s->current = NULL;
@@ -29,10 +29,10 @@ stream * sopen_mem(const char * corpus, size_t buffer_len) {
 
 void sclose(stream * s) {
     switch(s->type) {
-        case FROM_FILE:
+        case __SWEXP_FROM_FILE:
             fclose(s->file);
             break;
-        case FROM_MEMORY:
+        case __SWEXP_FROM_MEMORY:
             break;
         default:
             printf("unhandled stream type");
@@ -43,9 +43,9 @@ void sclose(stream * s) {
 
 int sgetc(stream * s) {
     switch(s->type) {
-        case FROM_FILE:
+        case __SWEXP_FROM_FILE:
             return fgetc(s->file);
-        case FROM_MEMORY:
+        case __SWEXP_FROM_MEMORY:
             if ((unsigned long) (s->current - s->origin)
                     < s->buflen) {
                 int c = (int) *(s->current);
@@ -62,7 +62,7 @@ int sgetc(stream * s) {
 
 int sseek(stream *s, long offset, int whence) {
     // file stuff
-    if(s->type == FROM_FILE)
+    if(s->type == __SWEXP_FROM_FILE)
         return fseek(s->file, offset, whence);
 
     // memory stuff

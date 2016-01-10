@@ -266,7 +266,7 @@ swexp_list_node * parse_stream_to_atoms(stream *f, unsigned int buffsize) {
 
 swexp_list_node * parse_file_to_atoms(FILE *f, unsigned int buffsize) {
     stream s;
-    s.type = FROM_FILE;
+    s.type = __SWEXP_FROM_FILE;
     s.file = f;
     s.origin = NULL;
     s.current = NULL;
@@ -279,7 +279,7 @@ swexp_list_node * parse_memory_to_atoms(
         size_t memory_length,
         unsigned int buffsize) {
     stream s;
-    s.type = FROM_MEMORY;
+    s.type = __SWEXP_FROM_MEMORY;
     s.file = NULL;
     s.buflen = buffsize;
     s.origin = f;

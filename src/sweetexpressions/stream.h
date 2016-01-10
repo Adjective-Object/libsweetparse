@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 typedef enum STREAM_TYPE {
-    FROM_FILE,
-    FROM_MEMORY
+    __SWEXP_FROM_FILE,
+    __SWEXP_FROM_MEMORY
 } STREAM_TYPE;
 
 typedef struct stream {
@@ -23,8 +23,8 @@ typedef struct stream {
  * target: either a pointer to a string that will be consumerd or 
  *      a path to a file, depending on the value of `type`
  * type: the type of the stream. 
- *      If it is FROM_FILE, then `target` will be the path to a file.
- *      If it is FROM_MEMORYm then `target` will be the string served.
+ *      If it is __SWEXP_FROM_FILE, then `target` will be the path to a file.
+ *      If it is __SWEXP_FROM_MEMORYm then `target` will be the string served.
  **/
 stream * sopen_file(const char * path);
 stream * sopen_mem(const char * corpus, size_t buffer_len);
