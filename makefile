@@ -6,7 +6,8 @@ all: lib example
 
 lib = libsweetexpressions.so
 src = src/sweetexpressions/datatypes.c src/sweetexpressions/parser.c \
-	  src/sweetexpressions/charclasses.c src/sweetexpressions.c
+	  src/sweetexpressions/charclasses.c src/sweetexpressions.c \
+	  src/sweetexpressions/stream.c
 libobjs = $(src:.c=.o)
 
 CFLAGS = -g -Wall -std=c99 -fPIC

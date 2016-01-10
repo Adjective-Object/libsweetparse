@@ -43,7 +43,7 @@ swexp_list_node * parse_s_expr(parser * p, char opening_brace) {
 
     char closing_brace = brace_pair(opening_brace);
 
-    while((c = fgetc(p->f)) != EOF && !is_closing_brace(c)) {
+    while((c = sgetc(p->f)) != EOF && !is_closing_brace(c)) {
         switch(p->state) {
             case SKIP_SPACE:
                 if (is_space(c)) {
@@ -64,13 +64,13 @@ swexp_list_node * parse_s_expr(parser * p, char opening_brace) {
                    tail = list;
                 } else {
                     // step back and start collecting the atom
-                    fseek(p->f, -1, SEEK_CUR);
+                    sseek(p->f, -1, SEEK_CUR);
                     begin_atom(p);
                 }
                 break;
             case COLLECTING_ATOM:
                 if (is_space(c) || is_newline(c)) {
-                    fseek(p->f, -1, SEEK_CUR);
+                    sseek(p->f, -1, SEEK_CUR);
                     tail->next = close_atom(p);
                     tail = tail->next;
                 } else if (is_opening_brace(c)) {
@@ -122,7 +122,7 @@ swexp_list_node * parse_line(parser * p) {
 
     p->state = SKIP_SPACE;
 
-    while((c = fgetc(p->f)) != EOF 
+    while((c = sgetc(p->f)) != EOF 
             && !is_newline(c)
             && !is_closing_brace(c)) {
         switch(p->state) {
@@ -131,7 +131,7 @@ swexp_list_node * parse_line(parser * p) {
                     // end atom
                     tail->next = close_atom(p);
                     tail = tail->next;
-                    fseek(p->f, -1, SEEK_CUR);
+                    sseek(p->f, -1, SEEK_CUR);
                 } else if (is_opening_brace(c)) {
                     swexp_list_node * bracehead = close_atom(p);
                     swexp_list_node * bracecontent =
@@ -152,7 +152,7 @@ swexp_list_node * parse_line(parser * p) {
                     tail = chain_tail(tail);
                 } else if (!is_space(c)) {
                     begin_atom(p);
-                    fseek(p->f, -1, SEEK_CUR);
+                    sseek(p->f, -1, SEEK_CUR);
                 }
                 break;
             default:
@@ -199,11 +199,11 @@ swexp_list_node * parse_block(parser * p) {
     // get initial indentation by consuming characters until we find some
     unsigned int current_indentation;
     for (current_indentation = p->indentation;
-            is_space(fgetc(p->f));
+            is_space(sgetc(p->f));
             current_indentation++){}
-    fseek(p->f, -1, SEEK_CUR);
+    sseek(p->f, -1, SEEK_CUR);
 
-    while((c = fgetc(p->f)) != EOF) {
+    while((c = sgetc(p->f)) != EOF) {
         switch(p->state) {
             case COUNTING_INDENTATION:
                 if (is_space(c)) {p->indentation++;}
@@ -211,7 +211,7 @@ swexp_list_node * parse_block(parser * p) {
                 else {
                     // this is a start of an atom.
                     // parse as appropriate based on indent
-                    fseek(p->f, -1, SEEK_CUR);
+                    sseek(p->f, -1, SEEK_CUR);
                     if (p->indentation > current_indentation) {
                         if (tail->type == ATOM) {
                             // make the tail a list before appending
@@ -246,7 +246,7 @@ swexp_list_node * parse_block(parser * p) {
     return fakehead.next;
 }
 
-swexp_list_node * parse_file_to_atoms(FILE *f, unsigned int buffsize) {
+swexp_list_node * parse_stream_to_atoms(stream *f, unsigned int buffsize) {
     char buffer[buffsize];
     parser p = {
         .f = f,
@@ -263,4 +263,38 @@ swexp_list_node * parse_file_to_atoms(FILE *f, unsigned int buffsize) {
     container->content = parse_block(&p);
     return container;
 }
+
+swexp_list_node * parse_file_to_atoms(FILE *f, unsigned int buffsize) {
+    stream s;
+    s.type = FROM_FILE;
+    s.file = f;
+    s.origin = NULL;
+    s.current = NULL;
+    s.buflen = 0;
+    return parse_stream_to_atoms(&s, buffsize);
+}
+
+swexp_list_node * parse_memory_to_atoms(
+        char * f,
+        size_t memory_length,
+        unsigned int buffsize) {
+    stream s;
+    s.type = FROM_MEMORY;
+    s.file = NULL;
+    s.buflen = buffsize;
+    s.origin = f;
+    s.current = f;
+
+    return parse_stream_to_atoms(&s, buffsize);
+}
+
+
+swexp_list_node * parse_string_to_atoms(
+        char * f,
+        unsigned int buffsize) {
+    return parse_memory_to_atoms(f, strlen(f), buffsize);
+}
+
+
+
 
