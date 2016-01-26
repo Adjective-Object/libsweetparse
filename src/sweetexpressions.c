@@ -32,3 +32,34 @@ void free_list(swexp_list_node * node) {
         node = next;
     }
 }
+
+#define INDENT_SIZE 4
+
+void _print_list(int indentation, swexp_list_node * node) {
+    while(node != NULL) {
+        switch(node->type){
+            case ATOM:
+                printf("<%s> ", (char *) node->content);
+                break;
+            case LIST:
+                printf("\n");
+                for(int i=0; i<indentation; i++){printf(" ");}
+                printf("(");
+                indentation += INDENT_SIZE;
+                _print_list(indentation, node->content);
+                indentation -= INDENT_SIZE;
+                printf(") ");
+                break;
+            case UNDEFINED:
+                printf("{UNDEFINED}");
+                break;
+        }
+        node = node->next;
+    }
+}
+
+void print_list(swexp_list_node * node) {
+    _print_list(0, node);
+}
+
+

@@ -11,5 +11,7 @@ void traverse_list(swexp_list_node * node,
 
 void free_list(swexp_list_node * head);
 
+void print_list(swexp_list_node * node);
+
 #endif
 

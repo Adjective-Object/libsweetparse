@@ -275,13 +275,13 @@ swexp_list_node * parse_file_to_atoms(FILE *f, unsigned int buffsize) {
 }
 
 swexp_list_node * parse_memory_to_atoms(
-        char * f,
+        const char * f,
         size_t memory_length,
         unsigned int buffsize) {
     stream s;
     s.type = __SWEXP_FROM_MEMORY;
     s.file = NULL;
-    s.buflen = buffsize;
+    s.buflen = memory_length;
     s.origin = f;
     s.current = f;
 
@@ -290,7 +290,7 @@ swexp_list_node * parse_memory_to_atoms(
 
 
 swexp_list_node * parse_string_to_atoms(
-        char * f,
+        const char * f,
         unsigned int buffsize) {
     return parse_memory_to_atoms(f, strlen(f), buffsize);
 }
