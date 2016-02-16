@@ -33,6 +33,23 @@ void free_list(swexp_list_node * node) {
     }
 }
 
+void free_node(swexp_list_node * node) {
+    if(node->type == LIST)
+        free_list((swexp_list_node *) node->content);
+    else
+        free(node->content);
+    free(node);
+}
+
+void free_node_nonrecursive(swexp_list_node * node) {
+    if(node->type != LIST)
+        free(node->content);
+    free(node);
+}
+
+
+
+
 #define INDENT_SIZE 4
 
 void _print_list(int indentation, swexp_list_node * node) {
