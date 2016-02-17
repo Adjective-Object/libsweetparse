@@ -26,7 +26,8 @@ unsigned int chain_len(swexp_list_node * node) {
 
 swexp_list_node * list_head(swexp_list_node * list) {
     if (list->type != LIST) {
-        printf("tried to get tail of non list");
+        printf("tried to get head of non list\n");
+        printf("%s\n", (char*) list->content);
         exit(1);
     }
     
@@ -40,7 +41,8 @@ swexp_list_node * chain_tail(swexp_list_node * list) {
 
 swexp_list_node * list_tail(swexp_list_node * list) {
     if (list->type != LIST) {
-        printf("tried to get tail of non list");
+        printf("tried to get tail of non list\n");
+        printf("%s\n", (char*) list->content);
         exit(1);
     }
 
@@ -52,6 +54,7 @@ swexp_list_node * listof(swexp_list_node * list_content) {
     list->next = NULL;
     list->type = LIST;
     list->content = list_content;
+    list->location = NULL;
     return list;
 }
 

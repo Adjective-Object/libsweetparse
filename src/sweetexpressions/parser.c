@@ -74,6 +74,7 @@ swexp_list_node * parse_s_expr(parser * p, char opening_brace) {
                        malloc(sizeof(swexp_list_node));
                    list->type = LIST;
                    list->next = NULL;
+                   list->location = NULL;
                    list->content = parse_s_expr(p, c);
 
                    tail->next = list;
@@ -195,6 +196,7 @@ swexp_list_node * parse_line(parser * p) {
         listhead->type = LIST;
         listhead->next = NULL;
         listhead->content = head.next;
+        listhead->location = NULL;
         return listhead;
     } else {
         return head.next;
@@ -236,9 +238,14 @@ swexp_list_node * parse_block(parser * p) {
                             tailcont->type = ATOM;
                             tailcont->next = NULL;
                             tailcont->content = tail->content;
+                            tailcont->location = NULL;
 
                             tail->type = LIST;
                             tail->content = tailcont;
+                            if (tail->location != NULL) {
+                                free(tail->location);
+                                tail->location = NULL;
+                            }
                         }
                         // append it to the list that is the last
                         // element
@@ -283,6 +290,7 @@ swexp_list_node * parse_stream_to_atoms(
     container->type = LIST;
     container->next = NULL;
     container->content = parse_block(&p);
+    container->location = NULL;
     return container;
 }
 
