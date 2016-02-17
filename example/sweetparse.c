@@ -67,7 +67,7 @@ int main(int argc, char ** argv) {
             exit(1);
         }
 
-        swexp_list_node * head = parse_file_to_atoms(f, 255);
+        swexp_list_node * head = parse_file_to_atoms(f, argv[i], 255);
         printList(head);
         printf("\n");
     }

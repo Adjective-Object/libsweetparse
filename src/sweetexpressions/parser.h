@@ -16,6 +16,7 @@ typedef enum {
 typedef struct parser {
     stream *f;
     parser_state state;
+    source_location current_location;
     char * buffer;
     unsigned int buffer_size;
     unsigned int buffer_index;
@@ -35,20 +36,22 @@ void free_nodes(swexp_list_node * head);
 
 // parses a file to atoms
 swexp_list_node * parse_file_to_atoms(
-        FILE* f, unsigned int buffsize);
+        FILE*path, const char * filename, unsigned int buffsize);
 
 swexp_list_node * parse_memory_to_atoms(
         const char * f,
+        const char * filename,
         size_t memory_length,
         unsigned int buffsize);
 
 swexp_list_node * parse_string_to_atoms(
         const char * f,
+        const char * filename,
         unsigned int buffsize);
 
 
 swexp_list_node * parse_stream_to_atoms(
-        stream* f, unsigned int buffsize);
+        stream *f, const char * filename, unsigned int buffsize);
 
 #endif
 

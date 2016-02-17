@@ -6,6 +6,17 @@
 #include "datatypes.h"
 #include "parser.h"
 
+char pgetc(parser *p) {
+    char c = sgetc(p->f);
+    if (is_newline(c)) {
+        p->current_location.column = 0;
+        p->current_location.line++;
+    } else {
+        p->current_location.column++;
+    }
+    return c;
+}
+
 void begin_atom(parser * p) {
     p->buffer_index = 0;
     p->state = COLLECTING_ATOM;
@@ -29,6 +40,11 @@ swexp_list_node * close_atom(parser * p) {
     node->type = ATOM;
     node->next = NULL;
 
+    node->location = (source_location *) malloc(sizeof(source_location));
+    node->location->source_file_name = p->current_location.source_file_name;
+    node->location->line = p->current_location.line;
+    node->location->column = p->current_location.column;
+
     p->state = SKIP_SPACE;
     return node;
 }
@@ -43,7 +59,7 @@ swexp_list_node * parse_s_expr(parser * p, char opening_brace) {
 
     char closing_brace = brace_pair(opening_brace);
 
-    while((c = sgetc(p->f)) != EOF && !is_closing_brace(c)) {
+    while((c = pgetc(p)) != EOF && !is_closing_brace(c)) {
         switch(p->state) {
             case SKIP_SPACE:
                 if (is_space(c)) {
@@ -122,7 +138,7 @@ swexp_list_node * parse_line(parser * p) {
 
     p->state = SKIP_SPACE;
 
-    while((c = sgetc(p->f)) != EOF 
+    while((c = pgetc(p)) != EOF 
             && !is_newline(c)
             && !is_closing_brace(c)) {
         switch(p->state) {
@@ -199,11 +215,11 @@ swexp_list_node * parse_block(parser * p) {
     // get initial indentation by consuming characters until we find some
     unsigned int current_indentation;
     for (current_indentation = p->indentation;
-            is_space(sgetc(p->f));
+            is_space(pgetc(p));
             current_indentation++){}
     sseek(p->f, -1, SEEK_CUR);
 
-    while((c = sgetc(p->f)) != EOF) {
+    while((c = pgetc(p)) != EOF) {
         switch(p->state) {
             case COUNTING_INDENTATION:
                 if (is_space(c)) {p->indentation++;}
@@ -246,11 +262,17 @@ swexp_list_node * parse_block(parser * p) {
     return fakehead.next;
 }
 
-swexp_list_node * parse_stream_to_atoms(stream *f, unsigned int buffsize) {
+swexp_list_node * parse_stream_to_atoms(
+        stream *f, const char * filename, unsigned int buffsize) {
     char buffer[buffsize];
     parser p = {
         .f = f,
         .state = COUNTING_INDENTATION, 
+        .current_location = {
+            .source_file_name = filename,
+            .line = 1,
+            .column = 1,
+        },
         .buffer = (char*) &buffer,
         .buffer_size = 255,
         .buffer_index = 0,
@@ -264,18 +286,20 @@ swexp_list_node * parse_stream_to_atoms(stream *f, unsigned int buffsize) {
     return container;
 }
 
-swexp_list_node * parse_file_to_atoms(FILE *f, unsigned int buffsize) {
+swexp_list_node * parse_file_to_atoms(FILE * f, const char * filename, unsigned int buffsize) {
     stream s;
     s.type = __SWEXP_FROM_FILE;
     s.file = f;
     s.origin = NULL;
     s.current = NULL;
     s.buflen = 0;
-    return parse_stream_to_atoms(&s, buffsize);
+    swexp_list_node * nodes = parse_stream_to_atoms(&s, filename, buffsize);
+    return nodes;
 }
 
 swexp_list_node * parse_memory_to_atoms(
         const char * f,
+        const char * filename,
         size_t memory_length,
         unsigned int buffsize) {
     stream s;
@@ -285,14 +309,14 @@ swexp_list_node * parse_memory_to_atoms(
     s.origin = f;
     s.current = f;
 
-    return parse_stream_to_atoms(&s, buffsize);
+    return parse_stream_to_atoms(&s, filename, buffsize);
 }
-
 
 swexp_list_node * parse_string_to_atoms(
         const char * f,
+        const char * filename,
         unsigned int buffsize) {
-    return parse_memory_to_atoms(f, strlen(f), buffsize);
+    return parse_memory_to_atoms(f, filename, strlen(f), buffsize);
 }
 
 
