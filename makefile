@@ -2,22 +2,26 @@
 # BULDING THE LIBRARY #
 #######################
 
-all: lib example
+all: libs example
 
 lib = libsweetexpressions.so
+libstatic = libsweetexpressions.a
 src = src/sweetexpressions/datatypes.c src/sweetexpressions/parser.c \
 	  src/sweetexpressions/charclasses.c src/sweetexpressions.c \
 	  src/sweetexpressions/stream.c
 libobjs = $(src:.c=.o)
 
 CFLAGS = -g -Wall -std=c99 -fPIC
-LDFLAGS = -shared
+LDFLAGS =
 
-lib: $(lib)
+libs: $(lib) $(libstatic)
 
 # link the libs from the object files
 $(lib): $(libobjs)
-	gcc $(LDFLAGS) -o $@ $^
+	gcc $(LDFLAGS) -shared -o $@ $^
+
+$(libstatic): $(libobjs)
+	ar rcs $@ $^
 
 src/%.o : src/%.c src/%.h
 	gcc $(CFLAGS) -c $< -o $@
