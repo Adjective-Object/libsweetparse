@@ -9,12 +9,21 @@
 char pgetc(parser *p) {
     char c = sgetc(p->f);
     if (is_newline(c)) {
-        p->current_location.column = 0;
+        p->current_location.column = 1;
         p->current_location.line++;
     } else {
         p->current_location.column++;
     }
     return c;
+}
+
+void prewind(parser * p, char c) {
+    sseek(p->f, -1, SEEK_CUR);
+    if (is_newline(c)) {
+        p->current_location.line--;
+    } else {
+        p->current_location.column--;
+    }
 }
 
 void begin_atom(parser * p) {
@@ -52,7 +61,7 @@ swexp_list_node * close_atom(parser * p) {
 #define IGNORE_COMMENTS() \
         if (is_comment_open(c)) { \
             do {} while (! is_comment_close((c = pgetc(p))) ); \
-            sseek(p->f, -1, SEEK_CUR); \
+            prewind(p, c); \
             continue; \
         }
 
@@ -91,13 +100,13 @@ swexp_list_node * parse_s_expr(parser * p, char opening_brace) {
                    tail = list;
                 } else {
                     // step back and start collecting the atom
-                    sseek(p->f, -1, SEEK_CUR);
+                    prewind(p, c);
                     begin_atom(p);
                 }
                 break;
             case COLLECTING_ATOM:
                 if (is_space(c) || is_newline(c)) {
-                    sseek(p->f, -1, SEEK_CUR);
+                    prewind(p, c);
                     tail->next = close_atom(p);
                     tail = tail->next;
                 } else if (is_opening_brace(c)) {
@@ -161,7 +170,7 @@ swexp_list_node * parse_line(parser * p) {
                     // end atom
                     tail->next = close_atom(p);
                     tail = tail->next;
-                    sseek(p->f, -1, SEEK_CUR);
+                    prewind(p, c);
                 } else if (is_opening_brace(c)) {
                     swexp_list_node * bracehead = close_atom(p);
                     swexp_list_node * bracecontent =
@@ -182,7 +191,7 @@ swexp_list_node * parse_line(parser * p) {
                     tail = chain_tail(tail);
                 } else if (!is_space(c)) {
                     begin_atom(p);
-                    sseek(p->f, -1, SEEK_CUR);
+                    prewind(p, c);
                 }
                 break;
             default:
@@ -232,7 +241,7 @@ swexp_list_node * parse_block(parser * p) {
     for (current_indentation = p->indentation;
             is_space(pgetc(p));
             current_indentation++){}
-    sseek(p->f, -1, SEEK_CUR);
+    prewind(p, '\0');
 
     while((c = pgetc(p)) != EOF) {
         // if we encounter a comment in any state, strip it out
@@ -245,7 +254,7 @@ swexp_list_node * parse_block(parser * p) {
                 else {
                     // this is a start of an atom.
                     // parse as appropriate based on indent
-                    sseek(p->f, -1, SEEK_CUR);
+                    prewind(p, c);
                     if (p->indentation > current_indentation) {
                         if (tail->type == ATOM) {
                             // make the tail a list before appending
