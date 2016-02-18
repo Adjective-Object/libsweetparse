@@ -10,7 +10,8 @@ typedef enum {
     COLLECTING_ATOM,
     COLLECTING_QUOTED_ATOM,
     COLLECTING_LIST,
-    SKIP_SPACE
+    SKIP_SPACE,
+    DISCARDING_COMMENT,
 } parser_state;
 
 typedef struct parser {
@@ -21,7 +22,6 @@ typedef struct parser {
     unsigned int buffer_size;
     unsigned int buffer_index;
     unsigned int indentation;
-    unsigned int linect;
 } parser;
 
 void begin_atom(parser *p);

@@ -8,6 +8,14 @@ bool is_space(char c) {
     return c == '\t' || c == ' ';
 }
 
+bool is_comment_open(char c) {
+    return c == ';';
+}
+
+bool is_comment_close(char c) {
+    return is_newline(c);
+}
+
 bool is_newline(char c) {
     return c == '\n' || c == '\r';
 }

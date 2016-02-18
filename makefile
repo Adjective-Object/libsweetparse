@@ -18,10 +18,10 @@ libs: $(lib) $(libstatic)
 
 # link the libs from the object files
 $(lib): $(libobjs)
-	gcc $(LDFLAGS) -shared -o $@ $^
+	gcc $(LDFLAGS) -shared -o $@ $(libobjs)
 
 $(libstatic): $(libobjs)
-	ar rcs $@ $^
+	ar rcs $@ $(libobjs)
 
 src/%.o : src/%.c src/%.h
 	gcc $(CFLAGS) -c $< -o $@
@@ -34,7 +34,7 @@ example_exec = example/sweetparse
 example_src = example/sweetparse.c
 example_obj = $(example_src:.c=.o)
 example_cflags = -g -Wall -std=c99 -Isrc
-example_ldflags = -L. -lsweetexpressions
+example_ldflags = -static -L. -lsweetexpressions
 
 example: $(example_exec)
 
@@ -42,7 +42,7 @@ $(example_obj): $(example_src) $(lib)
 	gcc $(example_cflags) -c $^ -o $@
 
 $(example_exec): $(example_obj)
-	gcc $(example_ldflags) $^ -o $@
+	gcc $^ -o $@ $(example_ldflags) 
 
 ################
 # MISC UTILITY #
@@ -50,7 +50,7 @@ $(example_exec): $(example_obj)
 
 # clean up the example and lib thigs
 clean:
-	rm -f $(libobjs) $(lib) $(example_obj) $(example_exec)
+	rm -f $(libobjs) $(lib) $(example_obj) $(example_exec) $(libstatic)
 
 # debug helper to print makefile variables
 print-%:

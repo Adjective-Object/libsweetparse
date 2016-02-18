@@ -49,6 +49,15 @@ swexp_list_node * close_atom(parser * p) {
     return node;
 }
 
+#define IGNORE_COMMENTS() \
+        if (is_comment_open(c)) { \
+            do {} while (! is_comment_close((c = pgetc(p))) ); \
+            sseek(p->f, -1, SEEK_CUR); \
+            continue; \
+        }
+
+
+
 swexp_list_node * parse_s_expr(parser * p, char opening_brace) {
     char c;
 
@@ -60,12 +69,13 @@ swexp_list_node * parse_s_expr(parser * p, char opening_brace) {
     char closing_brace = brace_pair(opening_brace);
 
     while((c = pgetc(p)) != EOF && !is_closing_brace(c)) {
+        // if we encounter a comment in any state, strip it out
+        IGNORE_COMMENTS()
+
         switch(p->state) {
             case SKIP_SPACE:
-                if (is_space(c)) {
-                    // do nothing if it is space
-                } else if (is_newline(c)) {
-                    p->linect++;
+                if (is_space(c) || is_newline(c)) {
+                    // do nothing if it is space or newline
                 }
                 else if (is_opening_brace(c)) {
                     // parse the parenthesized s expression into a list
@@ -142,6 +152,9 @@ swexp_list_node * parse_line(parser * p) {
     while((c = pgetc(p)) != EOF 
             && !is_newline(c)
             && !is_closing_brace(c)) {
+        // if we encounter a comment in any state, strip it out
+        IGNORE_COMMENTS()
+
         switch(p->state) {
             case COLLECTING_ATOM:
                 if (is_space(c)) {
@@ -222,6 +235,9 @@ swexp_list_node * parse_block(parser * p) {
     sseek(p->f, -1, SEEK_CUR);
 
     while((c = pgetc(p)) != EOF) {
+        // if we encounter a comment in any state, strip it out
+        IGNORE_COMMENTS()
+
         switch(p->state) {
             case COUNTING_INDENTATION:
                 if (is_space(c)) {p->indentation++;}
@@ -283,8 +299,8 @@ swexp_list_node * parse_stream_to_atoms(
         .buffer = (char*) &buffer,
         .buffer_size = 255,
         .buffer_index = 0,
-        .indentation = 0,
-        .linect = 0};
+        .indentation = 0
+    };
 
     swexp_list_node * container = malloc(sizeof(swexp_list_node));
     container->type = LIST;
