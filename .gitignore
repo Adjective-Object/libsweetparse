@@ -1,8 +1,22 @@
-src/*.o
-sweetparse
+# build products
+tests/sweet_test
+libsweetexpressions.so
+libsweetexpression.a
+
+# Cmake files
+Makefile
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# vim files
 *.swp
 *.swo
+
+# hidden files
 .*
-*.so
-*.a
-*.o
+
+# nix-shell stuff
+default.nix
+
