@@ -1,7 +1,7 @@
 # build products
 tests/sweet_test
-libsweetexpressions.so
-libsweetexpression.a
+libsweetparse.so
+libsweetparse.a
 
 # Cmake files
 Makefile
