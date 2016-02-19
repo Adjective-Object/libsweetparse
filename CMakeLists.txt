@@ -65,7 +65,7 @@ add_custom_target(lint
         --enable=warning
         --enable=missingInclude
         --enable=performance
-        -I ./src -I ./libsweetparse/src -I ./tests
+        -I ./src 
         ${LIB_SRCS})
 
 add_custom_target(format

@@ -16,4 +16,3 @@ char brace_pair(char c);
 char fpeekc(FILE *f);
 
 #endif
-
