@@ -41,7 +41,7 @@ static int parse_args(int argc, char ** argv) {
     while ((c = getopt(argc, argv, "i:")) != -1) {
         switch(c) {
             case 'i':
-                INDENT_SIZE = sscanf("%d", optarg);
+                sscanf(optarg, "%d", &INDENT_SIZE);
                 break;
             default:
                 printf("unrecognized argument '%c'\n", c);
