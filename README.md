@@ -1,4 +1,4 @@
 # libsweetparse
-a C implementation for simple 
-[sweetparse](http://srfi.schemers.org/srfi-110/srfi-110.html#specification) 
-style syntaxes, inspired by [sexpr](http://sexpr.sourceforge.net/).
+a recursive-descent parser for 
+[t-expression](http://srfi.schemers.org/srfi-110/srfi-110.html#specification)
+(aka sweetparse) syntax, inspired by [sexpr](http://sexpr.sourceforge.net/).
